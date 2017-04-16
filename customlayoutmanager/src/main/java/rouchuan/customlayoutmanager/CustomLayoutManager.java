@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.View;
@@ -238,7 +239,7 @@ public abstract class CustomLayoutManager extends RecyclerView.LayoutManager {
     }
 
     private float getMaxOffset() {
-        return isClockWise ? (getItemCount() - 1) * interval : 0;
+        return isClockWise ? (getItemCount() - 6) * interval : 0;
     }
 
     private float getMinOffset() {
