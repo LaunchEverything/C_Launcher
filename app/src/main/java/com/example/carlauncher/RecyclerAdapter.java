@@ -81,7 +81,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             int width = wm.getDefaultDisplay().getWidth();
             ViewGroup.LayoutParams layoutParams = itemView.getLayoutParams();
-            layoutParams.height = width/4;
+            layoutParams.height = (int)(layoutParams.width * 1.5f);
             itemView.setLayoutParams(layoutParams);
             textView = (TextView) itemView.findViewById(R.id.item_text);
             imageView = (ImageView) itemView.findViewById(R.id.item_img);

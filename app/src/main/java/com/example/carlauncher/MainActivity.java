@@ -8,11 +8,14 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Toast;
 
 import com.example.carlauncher.entity.Item;
@@ -31,10 +34,13 @@ public class MainActivity extends Activity {
     private List<Item> mResults = new ArrayList<Item>();
     RecyclerView mRecyclerView;
     private ScrollZoomLayoutManager scrollZoomLayoutManager;
+    LauncherModel mModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        mModel = new LauncherModel();
         initData();
         mRecyclerView = (RecyclerView)findViewById(R.id.rv_main);
         int space = getResources().getDimensionPixelSize(R.dimen.item_space);
@@ -58,25 +64,26 @@ public class MainActivity extends Activity {
 
             @Override
             public void onItemClick(RecyclerView.ViewHolder vh) {
-                //TODO.this is test
-                try{
-                    Intent intent = new Intent();
-                    intent.setClass(getApplicationContext(),TestActivity.class);
-                    startActivity(intent);
-                }catch (Exception e) {
-                    e.printStackTrace();
-                }
+                int postion = vh.getAdapterPosition();
+                Intent intent = mResults.get(postion).getIntent();
+                startActivity(intent);
+                overridePendingTransition(0, 0);
             }
         });
     }
     private void initData() {
-        for (int i=0;i<3;i++){
-            mResults.add(new Item(i*6+0,"Item01", R.mipmap.item1));
-            mResults.add(new Item(i*6+1,"Item02", R.mipmap.item2));
-            mResults.add(new Item(i*6+2,"Item03", R.mipmap.item3));
-            mResults.add(new Item(i*6+3,"Item04", R.mipmap.item4));
-            mResults.add(new Item(i*6+4,"Item05", R.mipmap.item5));
-            mResults.add(new Item(i*6+5,"Item06", R.mipmap.item6));
+        List<ResolveInfo> apps = mModel.getAllApps(this);
+        int maxCount = apps.size() > 30 ? 30 : apps.size();
+        PackageManager pm = getPackageManager();
+        for (int i = 0;i < maxCount;i++){
+            ResolveInfo info = apps.get(i);
+            if (info.activityInfo.packageName.equals(getPackageName())) continue;
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            intent.setComponent(new ComponentName(info.activityInfo.packageName, info.activityInfo.name));
+            Item item = new Item(info.loadLabel(pm).toString(), intent);
+            item.setImg(R.mipmap.main_set_icon_n);
+            mResults.add(item);
         }
     }
 

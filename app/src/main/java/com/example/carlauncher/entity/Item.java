@@ -1,5 +1,7 @@
 package com.example.carlauncher.entity;
 
+import android.content.Intent;
+
 import java.io.Serializable;
 
 /**
@@ -9,6 +11,7 @@ public class Item implements Serializable{
     private int id;
     private String name;
     private int img;
+    private Intent intent;
 
     public Item(int id, String name, int img) {
         this.id = id;
@@ -19,6 +22,11 @@ public class Item implements Serializable{
     public Item(String name, int img) {
         this.name = name;
         this.img = img;
+    }
+
+    public Item (String name, Intent intent) {
+        this.name = name;
+        this.intent = intent;
     }
 
     public int getId() {
@@ -43,5 +51,13 @@ public class Item implements Serializable{
 
     public void setImg(int img) {
         this.img = img;
+    }
+
+    public void setIntent(Intent intent) {
+        this.intent = intent;
+    }
+
+    public Intent getIntent () {
+        return intent;
     }
 }
