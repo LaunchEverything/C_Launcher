@@ -3,7 +3,6 @@ package com.example.carlauncher;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -13,28 +12,25 @@ import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
-
-import com.example.carlauncher.entity.Item;
+import com.example.carlauncher.entity.CarItem;
 import com.example.carlauncher.helper.MyItemTouchCallback;
 import com.example.carlauncher.helper.OnRecyclerItemClickListener;
 import com.example.carlauncher.utils.EaseCubicInterpolator;
-import com.example.carlauncher.utils.VibratorUtil;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import rouchuan.customlayoutmanager.CenterScrollListener;
 
 public class MainActivity extends Activity {
 
-    private List<Item> mResults = new ArrayList<Item>();
-    RecyclerView mRecyclerView;
+    private SparseArray<CarItem> mCarItems = new SparseArray<CarItem>();
+    RecyclerView mCarRecyclerView;
     private ScrollZoomLayoutManager scrollZoomLayoutManager;
     LauncherModel mModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,21 +38,21 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         mModel = new LauncherModel();
         initData();
-        mRecyclerView = (RecyclerView)findViewById(R.id.rv_main);
+        mCarRecyclerView = (RecyclerView) findViewById(R.id.rv_main);
         int space = getResources().getDimensionPixelSize(R.dimen.item_space);
         scrollZoomLayoutManager = new ScrollZoomLayoutManager(this, space);
-        mRecyclerView.addOnScrollListener(new CenterScrollListener());
-        mRecyclerView.setLayoutManager(scrollZoomLayoutManager);
-        RecyclerAdapter adapter = new RecyclerAdapter(R.layout.item_grid,mResults);
-        mRecyclerView.setAdapter(adapter);
+        mCarRecyclerView.addOnScrollListener(new CenterScrollListener());
+        mCarRecyclerView.setLayoutManager(scrollZoomLayoutManager);
+        RecyclerAdapter adapter = new RecyclerAdapter(R.layout.item_car, mCarItems);
+        mCarRecyclerView.setAdapter(adapter);
         final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new MyItemTouchCallback(adapter));
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+        itemTouchHelper.attachToRecyclerView(mCarRecyclerView);
 
-        mRecyclerView.addOnItemTouchListener(new OnRecyclerItemClickListener(mRecyclerView) {
+        mCarRecyclerView.addOnItemTouchListener(new OnRecyclerItemClickListener(mCarRecyclerView) {
             @Override
             public void onLongClick(RecyclerView.ViewHolder vh) {
                 Toast.makeText(MainActivity.this, "onItemClick,item = " + vh.getAdapterPosition(), Toast.LENGTH_SHORT);
-                if (vh.getLayoutPosition()!=mResults.size()-1) {
+                if (vh.getLayoutPosition() != mCarItems.size()-1) {
                     itemTouchHelper.startDrag(vh);
 //                    VibratorUtil.Vibrate(MainActivity.this, 70);   //震动70ms
                 }
@@ -65,25 +61,26 @@ public class MainActivity extends Activity {
             @Override
             public void onItemClick(RecyclerView.ViewHolder vh) {
                 int postion = vh.getAdapterPosition();
-                Intent intent = mResults.get(postion).getIntent();
+                Intent intent = mCarItems.get(postion).getIntent();
                 startActivity(intent);
                 overridePendingTransition(0, 0);
             }
         });
     }
+
     private void initData() {
         List<ResolveInfo> apps = mModel.getAllApps(this);
         int maxCount = apps.size() > 30 ? 30 : apps.size();
         PackageManager pm = getPackageManager();
-        for (int i = 0;i < maxCount;i++){
+        for (int i = 0;i < maxCount; i++){
             ResolveInfo info = apps.get(i);
             if (info.activityInfo.packageName.equals(getPackageName())) continue;
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             intent.setComponent(new ComponentName(info.activityInfo.packageName, info.activityInfo.name));
-            Item item = new Item(info.loadLabel(pm).toString(), intent);
-            item.setImg(R.mipmap.main_set_icon_n);
-            mResults.add(item);
+            CarItem item = new CarItem(info.loadLabel(pm).toString(), intent);
+            item.setIconRes(R.mipmap.main_set_icon_n);
+            mCarItems.put(i, item);
         }
     }
 
@@ -91,21 +88,21 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         startResumeAnimation();
-        mRecyclerView.setVisibility(View.VISIBLE);
+        mCarRecyclerView.setVisibility(View.VISIBLE);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        mRecyclerView.setVisibility(View.INVISIBLE);
+        mCarRecyclerView.setVisibility(View.INVISIBLE);
     }
 
     private void startResumeAnimation() {
         AnimatorSet animatorSet = new AnimatorSet();
         ArrayList<ValueAnimator> animators = new ArrayList<>();
-        final int width = mRecyclerView.getWidth();
-        for (int i = 0; i < mRecyclerView.getChildCount(); i++){
-            final View child = mRecyclerView.getChildAt(i);
+        final int width = mCarRecyclerView.getWidth();
+        for (int i = 0; i < mCarRecyclerView.getChildCount(); i++){
+            final View child = mCarRecyclerView.getChildAt(i);
             final ValueAnimator va = ValueAnimator.ofFloat(0, 1.0f);
             final int j = i;
             va.setDuration(1000);
@@ -125,7 +122,7 @@ public class MainActivity extends Activity {
                     child.setScaleX(scale);
                     child.setScaleY(scale);
                     child.setRotationY(rotation);
-                    mRecyclerView.setAlpha(value * value);
+                    mCarRecyclerView.setAlpha(value * value);
                 }
             });
             va.addListener(new AnimatorListenerAdapter() {
@@ -144,5 +141,4 @@ public class MainActivity extends Activity {
         animatorSet.setInterpolator(interpolator);
         animatorSet.start();
     }
-
 }
