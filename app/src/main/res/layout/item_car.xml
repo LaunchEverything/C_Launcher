@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.carlauncher.entity.CarView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/car_view"
+    android:layout_width="@dimen/item_width"
+    android:layout_height="@dimen/item_height"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/item"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/car_height"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:background="@mipmap/item_bg" >
+
+        <TextView
+            android:id="@+id/item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:layout_marginTop="@dimen/title_padding_top"
+            android:textColor="#ffffffff"
+            android:textSize="@dimen/title_text_size" />
+
+        <ImageView
+            android:id="@+id/item_icon"
+            android:layout_marginTop="@dimen/icon_padding_top"
+            android:src="@mipmap/main_set_icon_n"
+            android:layout_width="@dimen/icon_width"
+            android:layout_height="@dimen/icon_height"
+            android:scaleType="fitXY"/>
+
+    </LinearLayout>
+
+    <com.example.carlauncher.entity.ReflectView
+        android:id="@+id/reflect_view"
+        android:layout_marginTop="@dimen/icon_padding_top"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/reflect_height"
+        android:scaleType="fitXY"/>
+
+</com.example.carlauncher.entity.CarView>

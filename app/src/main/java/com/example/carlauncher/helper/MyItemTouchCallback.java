@@ -7,6 +7,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import rouchuan.customlayoutmanager.CustomLayoutManager;
 
 /**
  * Created by Administrator on 2016/4/12.
@@ -20,28 +21,13 @@ public class MyItemTouchCallback extends ItemTouchHelper.Callback {
 
     @Override
     public boolean isLongPressDragEnabled() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isItemViewSwipeEnabled() {
         return true;
     }
-
-
-//    @Override
-//    public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-//        if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
-//            final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
-//            final int swipeFlags = 0;
-//            return makeMovementFlags(dragFlags, swipeFlags);
-//        } else {
-//            final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
-//            //final int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
-//            final int swipeFlags = 0;
-//            return makeMovementFlags(dragFlags, swipeFlags);
-//        }
-//    }
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
@@ -67,6 +53,12 @@ public class MyItemTouchCallback extends ItemTouchHelper.Callback {
                 dragFlag = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
                 swipeFlag = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
             }
+            return makeMovementFlags(dragFlag, swipeFlag);
+        } else if (layoutManager instanceof CustomLayoutManager) {
+            // flag如果值是0，相当于这个功能被关闭
+            int dragFlag = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+            int swipeFlag = 0;
+            // create make
             return makeMovementFlags(dragFlag, swipeFlag);
         }
         return 0;

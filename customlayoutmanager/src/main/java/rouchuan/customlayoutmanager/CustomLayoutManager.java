@@ -51,7 +51,6 @@ public abstract class CustomLayoutManager extends RecyclerView.LayoutManager {
 
     protected abstract void setItemViewProperty(View itemView, float targetOffset);
 
-
     public CustomLayoutManager(Context context) {
         this(context, true);
     }
