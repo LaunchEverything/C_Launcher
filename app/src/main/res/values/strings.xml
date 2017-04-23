@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">C_Launcher</string>
+    <string name="item_bt">蓝牙音乐</string>
+    <string name="item_style">个性化</string>
+    <string name="item_favorite">音乐收藏</string>
+    <string name="item_music">酷我音乐</string>
+    <string name="item_help">语音帮助</string>
+    <string name="item_incall_help">Incall帮助</string>
 </resources>

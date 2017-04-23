@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.View;
@@ -50,6 +49,7 @@ public abstract class CustomLayoutManager extends RecyclerView.LayoutManager {
     protected abstract void setUp();
 
     protected abstract void setItemViewProperty(View itemView, float targetOffset);
+
 
     public CustomLayoutManager(Context context) {
         this(context, true);

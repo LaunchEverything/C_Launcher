@@ -6,16 +6,21 @@ import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.SparseArray;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.util.SparseArray;
+import com.example.carlauncher.entity.BenchItem;
 import com.example.carlauncher.entity.CarItem;
 import com.example.carlauncher.helper.MyItemTouchCallback;
 import com.example.carlauncher.helper.OnRecyclerItemClickListener;
@@ -24,20 +29,25 @@ import java.util.ArrayList;
 import java.util.List;
 import rouchuan.customlayoutmanager.CenterScrollListener;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements View.OnClickListener{
 
     private SparseArray<CarItem> mCarItems = new SparseArray<CarItem>();
     RecyclerView mCarRecyclerView;
+    private LinearLayout mBenchView;
+    private ImageView mMenuView;
     private ScrollZoomLayoutManager scrollZoomLayoutManager;
-    LauncherModel mModel;
-
+    private LauncherModel mModel;
+    private int mBenchHeight;
+    private boolean mBenchMenuVisible;
+    private boolean mIsAnimating = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        setupViews();
         mModel = new LauncherModel();
-        initData();
+        bindData(this);
         mCarRecyclerView = (RecyclerView) findViewById(R.id.rv_main);
         int space = getResources().getDimensionPixelSize(R.dimen.item_space);
         scrollZoomLayoutManager = new ScrollZoomLayoutManager(this, space);
@@ -68,6 +78,19 @@ public class MainActivity extends Activity {
         });
     }
 
+    private void setupViews () {
+        mBenchView = (LinearLayout) findViewById(R.id.bench);
+        mMenuView = (ImageView)findViewById(R.id.menu);
+        mMenuView.setOnClickListener(this);
+        mBenchHeight = getResources().getDimensionPixelSize(R.dimen.bench_height);
+        mBenchView.setTranslationY(mBenchHeight);
+    }
+
+    private void bindData(Context context){
+        initData();
+        initBench(context);
+    }
+
     private void initData() {
         List<ResolveInfo> apps = mModel.getAllApps(this);
         int maxCount = apps.size() > 30 ? 30 : apps.size();
@@ -81,6 +104,21 @@ public class MainActivity extends Activity {
             CarItem item = new CarItem(info.loadLabel(pm).toString(), intent);
             item.setIconRes(R.mipmap.main_set_icon_n);
             mCarItems.put(i, item);
+        }
+    }
+
+    private void initBench (Context context) {
+        BenchItem[] items = {
+                new BenchItem(R.string.item_bt, R.drawable.list_bt_),
+                new BenchItem(R.string.item_style, R.drawable.list_skin_),
+                new BenchItem(R.string.item_favorite, R.drawable.list_love_),
+                new BenchItem(R.string.item_music, R.drawable.list_music_),
+                new BenchItem(R.string.item_help, R.drawable.list_help_)
+        };
+        for (int i = 0; i < items.length; i++) {
+            BenchItemView view = (BenchItemView) LayoutInflater.from(context).inflate(R.layout.bench_item, mBenchView, false);
+            view.setItem(items[i]);
+            mBenchView.addView(view);
         }
     }
 
@@ -105,7 +143,7 @@ public class MainActivity extends Activity {
             final View child = mCarRecyclerView.getChildAt(i);
             final ValueAnimator va = ValueAnimator.ofFloat(0, 1.0f);
             final int j = i;
-            va.setDuration(1000);
+            va.setDuration(900);
             child.setLayerType(View.LAYER_TYPE_HARDWARE, null);
             child.setTranslationX(width + child.getLeft());
             child.setScaleX(1);
@@ -139,6 +177,77 @@ public class MainActivity extends Activity {
             animatorSet.playTogether(animators.get(i));
         }
         animatorSet.setInterpolator(interpolator);
+        animatorSet.setStartDelay(100);
         animatorSet.start();
+    }
+
+    private void showBenchMenu(){
+        mBenchMenuVisible = true;
+        mIsAnimating = true;
+        ValueAnimator animator = ValueAnimator.ofFloat(0, 1.0f);
+        animator.setDuration(400);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float value = (float)animation.getAnimatedValue();
+                mBenchView.setTranslationY(mBenchHeight * (1 - value));
+                mCarRecyclerView.setScaleX(0.8f + 0.2f * (1 - value));
+                mCarRecyclerView.setScaleY(0.8f + 0.2f * (1 - value));
+            }
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                mIsAnimating = false;
+            }
+        });
+        animator.start();
+    }
+
+    private void hideBenchMenu(){
+        mBenchMenuVisible = false;
+        mIsAnimating = true;
+        ValueAnimator animator = ValueAnimator.ofFloat(0, 1.0f);
+        animator.setDuration(400);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float value = (float)animation.getAnimatedValue();
+                mBenchView.setTranslationY(mBenchHeight * value);
+                mCarRecyclerView.setScaleX(0.8f + 0.2f * value);
+                mCarRecyclerView.setScaleY(0.8f + 0.2f * value);
+            }
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                mIsAnimating = false;
+            }
+        });
+        animator.start();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.menu){
+            if (!mIsAnimating) {
+                if (mBenchMenuVisible) {
+                    hideBenchMenu();
+                } else {
+                    showBenchMenu();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!mIsAnimating) {
+            if (mBenchMenuVisible) {
+                hideBenchMenu();
+            }
+        }
     }
 }
