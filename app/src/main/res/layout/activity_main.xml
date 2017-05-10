@@ -6,8 +6,11 @@
     android:background="@mipmap/background"
     tools:context="com.example.carlauncher.MainActivity">
 
+    <include layout="@layout/advanced_weather"/>
+
     <com.example.carlauncher.CarRecyclerView
         android:id="@+id/rv_main"
+        android:layout_marginTop="100dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
