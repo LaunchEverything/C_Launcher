@@ -38,7 +38,6 @@
         android:id="@+id/reflect_view"
         android:layout_marginTop="@dimen/icon_padding_top"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/reflect_height"
-        android:scaleType="fitXY"/>
+        android:layout_height="match_parent" />
 
 </com.example.carlauncher.entity.CarView>

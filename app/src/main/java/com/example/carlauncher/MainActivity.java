@@ -105,7 +105,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Call
         int smallSide = Math.min(realSize.x, realSize.y);
         int largeSide = Math.max(realSize.x, realSize.y);
         int itemWidth = (largeSide - 2 * mStartLeft - (ITEM_COUNT_IN_PAGE - 1) * mItemSpace) / ITEM_COUNT_IN_PAGE;
-        int itemHeight = (int)(itemWidth * 2.5f);
+        int itemHeight = (int)(itemWidth * 1.5f);
         mAdapter.setItemSize(itemWidth, itemHeight);
     }
 

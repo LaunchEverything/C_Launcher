@@ -103,13 +103,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             super(itemView);
             ViewGroup.LayoutParams layoutParams = itemView.getLayoutParams();
             layoutParams.width = mItemWidth;
-            layoutParams.height = mItemHeight;
+            layoutParams.height = mItemHeight * 2;
             itemView.setLayoutParams(layoutParams);
             if (itemView instanceof CarView) {
                 mTitleView = (TextView) ((CarView) itemView).getTitleView();
                 mIconView = (ImageView) ((CarView) itemView).getIconView();
                 mMainItemView = (LinearLayout) ((CarView) itemView).getMainView();
-                ((CarView) itemView).setReflectViewSize(mItemWidth);
+                ((CarView) itemView).setReflectViewSize(mItemWidth, mItemHeight);
             }
         }
     }

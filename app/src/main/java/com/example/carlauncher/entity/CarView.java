@@ -43,8 +43,9 @@ public class CarView extends LinearLayout {
         super.onFinishInflate();
     }
 
-    public void setReflectViewSize (int size) {
-        mReflectWidth = mReflectHeight = size;
+    public void setReflectViewSize (int width, int height) {
+        mReflectWidth = width;
+        mReflectHeight = height;
         mReflectView.init(mReflectWidth, mReflectHeight);
     }
 
