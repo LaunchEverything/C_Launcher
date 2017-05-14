@@ -8,7 +8,10 @@ import android.support.v7.widget.RecyclerView;
  */
 public class CenterScrollListener extends RecyclerView.OnScrollListener{
     private boolean mAutoSet = false;
-
+    CustomLayoutManager customLayoutManager;
+    public CenterScrollListener(CustomLayoutManager layoutManager){
+        customLayoutManager = layoutManager;
+    }
     @Override
     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
         super.onScrollStateChanged(recyclerView, newState);
@@ -16,6 +19,15 @@ public class CenterScrollListener extends RecyclerView.OnScrollListener{
         if(!(layoutManager instanceof CustomLayoutManager)){
             mAutoSet = true;
             return;
+        }
+        if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+            customLayoutManager.setScrollCallback(true);
+        }
+        if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+            int dx = ((CustomLayoutManager)layoutManager).getOffsetCenterView();
+            if (mAutoSet || dx == 0) {
+                customLayoutManager.setScrollCallback(false);
+            }
         }
 
         if(!mAutoSet){

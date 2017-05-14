@@ -11,15 +11,16 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.util.AttributeSet;
-import android.support.v7.widget.AppCompatImageView;
 import android.view.View;
+import android.widget.ImageView;
+
 import com.example.carlauncher.R;
 
 /**
  * Created by Administrator on 2017/4/23.
  */
 
-public class ReflectView extends AppCompatImageView {
+public class ReflectView extends ImageView {
 
     private View mCarView;
 
@@ -39,12 +40,12 @@ public class ReflectView extends AppCompatImageView {
 
     public ReflectView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init();
+//        init();
     }
 
-    private void init() {
-        mReflectWidth = getResources().getDimensionPixelSize(R.dimen.item_width);
-        mReflectHeight = getResources().getDimensionPixelSize(R.dimen.car_height);
+    public void init(int width, int height) {
+        mReflectWidth = width;//getResources().getDimensionPixelSize(R.dimen.item_width);
+        mReflectHeight = height;//getResources().getDimensionPixelSize(R.dimen.car_height);
         mReflectBitmap = Bitmap.createBitmap(mReflectWidth, mReflectHeight, Bitmap.Config.ARGB_8888);
         mReflectCanvas = new Canvas();
         mReflectCanvas.setBitmap(mReflectBitmap);
@@ -57,9 +58,11 @@ public class ReflectView extends AppCompatImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        mCarView.draw(mReflectCanvas);
-        Bitmap bitmap = getReflectBitmap(mReflectBitmap, true);
-        canvas.drawBitmap(bitmap, 0, 0, null);
+        if (mReflectCanvas != null && mReflectBitmap != null) {
+            mCarView.draw(mReflectCanvas);
+            Bitmap bitmap = getReflectBitmap(mReflectBitmap, true);
+            canvas.drawBitmap(bitmap, 0, 0, null);
+        }
         super.onDraw(canvas);
     }
 

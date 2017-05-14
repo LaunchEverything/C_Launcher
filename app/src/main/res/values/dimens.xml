@@ -1,8 +1,9 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="item_space">10dp</dimen>
+    <dimen name="recycleview_start_left">40dp</dimen>
     <dimen name="bench_padding_left">40dp</dimen>
-    <dimen name="bench_padding_right">40dp</dimen>
+    <dimen name="bench_padding_right">120dp</dimen>
     <dimen name="bench_height">90dp</dimen>
     <dimen name="item_width">105dp</dimen>
     <dimen name="item_height">250dp</dimen>

@@ -7,10 +7,11 @@
     tools:context="com.example.carlauncher.MainActivity">
 
     <include layout="@layout/advanced_weather"/>
+    <include layout="@layout/states_bar"/>
 
     <com.example.carlauncher.CarRecyclerView
         android:id="@+id/rv_main"
-        android:layout_marginTop="100dp"
+        android:paddingTop="80dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -22,4 +23,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|left"
         android:src="@drawable/button_menu_drawable"/>
+    <include layout="@layout/quick_start_area"/>
 </FrameLayout>

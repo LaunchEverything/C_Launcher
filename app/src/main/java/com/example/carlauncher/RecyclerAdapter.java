@@ -8,9 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.example.carlauncher.entity.CarItem;
 import com.example.carlauncher.entity.CarView;
+import com.example.carlauncher.entity.ReflectView;
 import com.example.carlauncher.helper.MyItemTouchCallback;
 
 /**
@@ -21,10 +23,22 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     private Context mContext;
     private int mLayoutId;
     private SparseArray<CarItem> mCarItems;
+    private Callback mCallback;
+    private int mItemWidth;
+    private int mItemHeight;
 
     public RecyclerAdapter(int layoutId, SparseArray<CarItem> carItems){
         this.mCarItems = carItems;
         this.mLayoutId = layoutId;
+    }
+
+    public void setCallback(Callback callback) {
+        mCallback = callback;
+    }
+
+    public void setItemSize (int width, int height) {
+        mItemWidth = width;
+        mItemHeight = height;
     }
 
     @Override
@@ -35,9 +49,20 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, int position) {
-        holder.mTitleView.setText(mCarItems.get(position).getTitle());
-        holder.mIconView.setImageResource(mCarItems.get(position).getIconRes());
+    public void onBindViewHolder(final MyViewHolder holder, final int position) {
+        CarItem item = mCarItems.get(position);
+        if (item != null) {
+            holder.mTitleView.setText(item.getTitle());
+            holder.mIconView.setImageResource(item.getIconRes());
+        }
+        holder.mMainItemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mCallback != null) {
+                    mCallback.onClickCallback(holder, position);
+                }
+            }
+        });
     }
 
     @Override
@@ -71,17 +96,20 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     public class MyViewHolder extends RecyclerView.ViewHolder{
         public TextView mTitleView;
         public ImageView mIconView;
+        public LinearLayout mMainItemView;
+        public ReflectView mReflectView;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-            int width = wm.getDefaultDisplay().getWidth();
-//            ViewGroup.LayoutParams layoutParams = itemView.getLayoutParams();
-//            layoutParams.height = width / 4;
-//            itemView.setLayoutParams(layoutParams);
+            ViewGroup.LayoutParams layoutParams = itemView.getLayoutParams();
+            layoutParams.width = mItemWidth;
+            layoutParams.height = mItemHeight;
+            itemView.setLayoutParams(layoutParams);
             if (itemView instanceof CarView) {
                 mTitleView = (TextView) ((CarView) itemView).getTitleView();
                 mIconView = (ImageView) ((CarView) itemView).getIconView();
+                mMainItemView = (LinearLayout) ((CarView) itemView).getMainView();
+                ((CarView) itemView).setReflectViewSize(mItemWidth);
             }
         }
     }

@@ -15,21 +15,28 @@ public class ScrollZoomLayoutManager extends CustomLayoutManager {
     private static final float SCALE_RATE = 1.1f;
     private static final float MAX_RATION = 9f;
     private int itemSpace = 0;
+    private RecyclerView recyclerView;
     private final static String TAG = "ScrollZoomLayoutManager";
 
-    public ScrollZoomLayoutManager(Context context, int itemSpace) {
+    public ScrollZoomLayoutManager(Context context, int startLeft, int itemSpace) {
         super(context);
         this.itemSpace = itemSpace;
+        this.startLeft = startLeft;
     }
 
-    public ScrollZoomLayoutManager(Context context, int itemSpace, boolean isClockWise) {
+    public ScrollZoomLayoutManager(Context context, int startLeft, int itemSpace, boolean isClockWise) {
         super(context,isClockWise);
         this.itemSpace = itemSpace;
+        this.startLeft = startLeft;
+    }
+
+    public void setRecycleView(RecyclerView view){
+        recyclerView = view;
     }
 
     @Override
     protected float setInterval() {
-        return (int) (mDecoratedChildWidth*((SCALE_RATE-1f)/2f+1)+itemSpace);
+        return mDecoratedChildWidth + itemSpace;
     }
 
     @Override
@@ -41,10 +48,16 @@ public class ScrollZoomLayoutManager extends CustomLayoutManager {
     protected void setItemViewProperty(View itemView, float targetOffset) {
         float scale = calculateScale((int) targetOffset + startLeft);
         float rotation = calculateRotation((int) targetOffset + startLeft);
+        itemView.setPivotY(mDecoratedChildHeight / 4);
         itemView.setScaleX(scale);
         itemView.setScaleY(scale);
         itemView.setRotationY(rotation);
-    }
+        boolean hideView =  ((targetOffset + startLeft + mDecoratedChildWidth > getHorizontalSpace())
+                || (targetOffset + startLeft <= 0)) && scrollStop;
+        if (hideView){
+            itemView.setAlpha(0);
+        }
+   }
 
     /**
      *

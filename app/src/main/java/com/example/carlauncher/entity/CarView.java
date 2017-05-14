@@ -18,6 +18,8 @@ public class CarView extends LinearLayout {
     private TextView mTitleView;
     private ImageView mIconView;
     private ReflectView mReflectView;
+    private int mReflectWidth;
+    private int mReflectHeight;
 
     public CarView(Context context) {
         this(context, null, 0);
@@ -41,11 +43,24 @@ public class CarView extends LinearLayout {
         super.onFinishInflate();
     }
 
+    public void setReflectViewSize (int size) {
+        mReflectWidth = mReflectHeight = size;
+        mReflectView.init(mReflectWidth, mReflectHeight);
+    }
+
     public View getTitleView() {
         return mTitleView;
     }
 
     public View getIconView() {
         return mIconView;
+    }
+
+    public View getMainView () {
+        return mCarView;
+    }
+
+    public View getReflectView () {
+        return mReflectView;
     }
 }

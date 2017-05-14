@@ -10,12 +10,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -29,33 +33,40 @@ import java.util.ArrayList;
 import java.util.List;
 import rouchuan.customlayoutmanager.CenterScrollListener;
 
-public class MainActivity extends Activity implements View.OnClickListener{
+public class MainActivity extends Activity implements View.OnClickListener, Callback{
 
     private SparseArray<CarItem> mCarItems = new SparseArray<CarItem>();
     RecyclerView mCarRecyclerView;
     private LinearLayout mBenchView;
     private ImageView mMenuView;
     private ScrollZoomLayoutManager scrollZoomLayoutManager;
+    private RecyclerAdapter mAdapter;
     private LauncherModel mModel;
     private int mBenchHeight;
     private boolean mBenchMenuVisible;
     private boolean mIsAnimating = false;
+    private final int ITEM_COUNT_IN_PAGE = 6;
+    private int mItemSpace;
+    private int mStartLeft;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         setupViews();
         mModel = new LauncherModel();
         bindData(this);
         mCarRecyclerView = (RecyclerView) findViewById(R.id.rv_main);
-        int space = getResources().getDimensionPixelSize(R.dimen.item_space);
-        scrollZoomLayoutManager = new ScrollZoomLayoutManager(this, space);
-        mCarRecyclerView.addOnScrollListener(new CenterScrollListener());
+        mItemSpace = getResources().getDimensionPixelSize(R.dimen.item_space);
+        mStartLeft = getResources().getDimensionPixelSize(R.dimen.recycleview_start_left);
+        scrollZoomLayoutManager = new ScrollZoomLayoutManager(this, mStartLeft, mItemSpace);
+        scrollZoomLayoutManager.setRecycleView(mCarRecyclerView);
+        mCarRecyclerView.addOnScrollListener(new CenterScrollListener(scrollZoomLayoutManager));
         mCarRecyclerView.setLayoutManager(scrollZoomLayoutManager);
-        RecyclerAdapter adapter = new RecyclerAdapter(R.layout.item_car, mCarItems);
-        mCarRecyclerView.setAdapter(adapter);
-        final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new MyItemTouchCallback(adapter));
+        mAdapter = new RecyclerAdapter(R.layout.item_car, mCarItems);
+        mAdapter.setCallback(this);
+        mCarRecyclerView.setAdapter(mAdapter);
+        layout();
+        final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new MyItemTouchCallback(mAdapter));
         itemTouchHelper.attachToRecyclerView(mCarRecyclerView);
 
         mCarRecyclerView.addOnItemTouchListener(new OnRecyclerItemClickListener(mCarRecyclerView) {
@@ -68,14 +79,34 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 }
             }
 
-            @Override
-            public void onItemClick(RecyclerView.ViewHolder vh) {
-                int postion = vh.getAdapterPosition();
-                Intent intent = mCarItems.get(postion).getIntent();
-                startActivity(intent);
-                overridePendingTransition(0, 0);
-            }
+//            @Override
+//            public void onItemClick(RecyclerView.ViewHolder vh) {
+//                int postion = vh.getAdapterPosition();
+//                Intent intent = mCarItems.get(postion).getIntent();
+//                startActivity(intent);
+//                overridePendingTransition(0, 0);
+//            }
         });
+    }
+
+    private void layout (){
+        WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics dm = new DisplayMetrics();
+        display.getMetrics(dm);
+
+        Point smallestSize = new Point();
+        Point largestSize = new Point();
+        display.getCurrentSizeRange(smallestSize, largestSize);
+        Point realSize = new Point();
+        display.getRealSize(realSize);
+        // The real size never changes. smallSide and largeSide will remain the
+        // same in any orientation.
+        int smallSide = Math.min(realSize.x, realSize.y);
+        int largeSide = Math.max(realSize.x, realSize.y);
+        int itemWidth = (largeSide - 2 * mStartLeft - (ITEM_COUNT_IN_PAGE - 1) * mItemSpace) / ITEM_COUNT_IN_PAGE;
+        int itemHeight = (int)(itemWidth * 2.5f);
+        mAdapter.setItemSize(itemWidth, itemHeight);
     }
 
     private void setupViews () {
@@ -93,7 +124,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     private void initData() {
         List<ResolveInfo> apps = mModel.getAllApps(this);
-        int maxCount = apps.size() > 30 ? 30 : apps.size();
+        int maxCount = apps.size();
         PackageManager pm = getPackageManager();
         for (int i = 0;i < maxCount; i++){
             ResolveInfo info = apps.get(i);
@@ -250,4 +281,16 @@ public class MainActivity extends Activity implements View.OnClickListener{
             }
         }
     }
+
+    @Override
+    public void onClickCallback(RecyclerView.ViewHolder holder, int position) {
+//        int postion = vh.getAdapterPosition();
+        Intent intent = mCarItems.get(position).getIntent();
+        startActivity(intent);
+        overridePendingTransition(0, 0);
+    }
+}
+
+interface Callback {
+    public void onClickCallback(RecyclerView.ViewHolder holder, int position);
 }

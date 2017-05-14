@@ -41,6 +41,10 @@ public abstract class CustomLayoutManager extends RecyclerView.LayoutManager {
 
     private int targetPosition = -1;
 
+    protected boolean scrollStart = false;
+
+    protected boolean scrollStop = true;
+
     protected abstract float setInterval();
 
     /**
@@ -74,9 +78,9 @@ public abstract class CustomLayoutManager extends RecyclerView.LayoutManager {
             measureChildWithMargins(scrap, 0, 0);
             mDecoratedChildWidth = getDecoratedMeasuredWidth(scrap);
             mDecoratedChildHeight = getDecoratedMeasuredHeight(scrap);
-            startLeft = 0;//(getHorizontalSpace() - mDecoratedChildWidth) / 2;
-            startTop = (getVerticalSpace() - mDecoratedChildHeight) / 2;
             interval = setInterval();
+//            startLeft = (getHorizontalSpace() - (int)(mDecoratedChildWidth * 5 + (interval - mDecoratedChildWidth) * 4)) / 2;
+            startTop = getPaddingTop() + (int)(mDecoratedChildHeight * 0.1f);
             setUp();
             detachAndScrapView(scrap, recycler);
         }
@@ -296,5 +300,21 @@ public abstract class CustomLayoutManager extends RecyclerView.LayoutManager {
 
     public int getOffsetCenterView() {
         return (int) ((getCurrentPosition() * (isClockWise ? interval : -interval) - offset) * getDistanceRatio());
+    }
+
+    public void setScrollCallback ( boolean scrollStart) {
+        this.scrollStart = scrollStart;
+        this.scrollStop = !scrollStart;
+        int count = getChildCount();
+        for (int i = 0; i < count; i++) {
+            View scrap = getChildAt(i);
+            float targetOffset = scrap.getLeft();
+            boolean animated = ((targetOffset + mDecoratedChildWidth > getHorizontalSpace())
+                    || (targetOffset <= 0));
+            if (animated) {
+                float finalAlpha = scrollStart ? 1 : 0;
+                scrap.animate().alpha(finalAlpha).setDuration(300).start();
+            }
+        }
     }
 }
