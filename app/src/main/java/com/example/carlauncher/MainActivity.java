@@ -41,6 +41,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Call
     RecyclerView mCarRecyclerView;
     private LinearLayout mBenchView;
     private ImageView mMenuView;
+    private ImageView mHomeView;
     private ScrollZoomLayoutManager scrollZoomLayoutManager;
     private RecyclerAdapter mAdapter;
     private LauncherModel mModel;
@@ -115,6 +116,8 @@ public class MainActivity extends Activity implements View.OnClickListener, Call
         mBenchView = (LinearLayout) findViewById(R.id.bench);
         mMenuView = (ImageView)findViewById(R.id.menu);
         mMenuView.setOnClickListener(this);
+        mHomeView = (ImageView)findViewById(R.id.home);
+        mHomeView.setOnClickListener(this);
         mBenchHeight = getResources().getDimensionPixelSize(R.dimen.bench_height);
         mBenchView.setTranslationY(mBenchHeight);
     }
@@ -226,13 +229,23 @@ public class MainActivity extends Activity implements View.OnClickListener, Call
                 mBenchView.setTranslationY(mBenchHeight * (1 - value));
                 mCarRecyclerView.setScaleX(0.8f + 0.2f * (1 - value));
                 mCarRecyclerView.setScaleY(0.8f + 0.2f * (1 - value));
+                mMenuView.setAlpha(1 - value);
+                mHomeView.setAlpha(value);
             }
         });
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                mMenuView.setVisibility(View.VISIBLE);
+                mHomeView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 mIsAnimating = false;
+                mMenuView.setVisibility(View.GONE);
             }
         });
         animator.start();
@@ -250,13 +263,22 @@ public class MainActivity extends Activity implements View.OnClickListener, Call
                 mBenchView.setTranslationY(mBenchHeight * value);
                 mCarRecyclerView.setScaleX(0.8f + 0.2f * value);
                 mCarRecyclerView.setScaleY(0.8f + 0.2f * value);
+                mMenuView.setAlpha(value);
+                mHomeView.setAlpha(1 - value);
             }
         });
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                mMenuView.setVisibility(View.VISIBLE);
+                mHomeView.setVisibility(View.VISIBLE);
+            }
+            @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 mIsAnimating = false;
+                mHomeView.setVisibility(View.GONE);
             }
         });
         animator.start();
@@ -266,11 +288,11 @@ public class MainActivity extends Activity implements View.OnClickListener, Call
     public void onClick(View v) {
         if (v.getId() == R.id.menu){
             if (!mIsAnimating) {
-                if (mBenchMenuVisible) {
-                    hideBenchMenu();
-                } else {
-                    showBenchMenu();
-                }
+                showBenchMenu();
+            }
+        } else if (v.getId() == R.id.home) {
+            if (!mIsAnimating) {
+                hideBenchMenu();
             }
         }
     }

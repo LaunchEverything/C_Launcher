@@ -23,5 +23,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|left"
         android:src="@drawable/button_menu_drawable"/>
+    <ImageView
+        android:id="@+id/home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:src="@drawable/button_home_drawable"
+        android:visibility="gone"/>
+
     <include layout="@layout/quick_start_area"/>
 </FrameLayout>
