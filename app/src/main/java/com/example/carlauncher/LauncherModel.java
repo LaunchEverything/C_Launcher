@@ -18,7 +18,7 @@ public class LauncherModel {
         PackageManager pm = context.getPackageManager();
         final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        List<ResolveInfo> infos = pm.queryIntentActivities(mainIntent, PackageManager.MATCH_DEFAULT_ONLY);
+        List<ResolveInfo> infos = pm.queryIntentActivities(mainIntent, 0);
         return infos;
     }
 
