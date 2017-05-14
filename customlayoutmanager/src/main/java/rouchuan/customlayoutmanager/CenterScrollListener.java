@@ -32,15 +32,19 @@ public class CenterScrollListener extends RecyclerView.OnScrollListener{
 
         if(!mAutoSet){
             if(newState == RecyclerView.SCROLL_STATE_IDLE){
-                final int dx;
-                dx = ((CustomLayoutManager)layoutManager).getOffsetCenterView();
-                ((CustomLayoutManager) layoutManager).resetTargetPosition();
-                recyclerView.smoothScrollBy(dx,0);
+                resetPosition((CustomLayoutManager)layoutManager, recyclerView);
             }
             mAutoSet = true;
         }
         if(newState == RecyclerView.SCROLL_STATE_DRAGGING || newState == RecyclerView.SCROLL_STATE_SETTLING){
             mAutoSet = false;
         }
+    }
+
+    public void resetPosition(CustomLayoutManager layoutManager, RecyclerView recyclerView) {
+        final int dx;
+        dx = layoutManager.getOffsetCenterView();
+        layoutManager.resetTargetPosition();
+        recyclerView.smoothScrollBy(dx,0);
     }
 }

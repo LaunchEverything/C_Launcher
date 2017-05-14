@@ -101,7 +101,7 @@ public class MyItemTouchCallback extends ItemTouchHelper.Callback {
                     background = drawable;
                 }
             }
-            viewHolder.itemView.setBackgroundColor(Color.LTGRAY);
+            viewHolder.itemView.setBackgroundColor(Color.TRANSPARENT);
         }
         super.onSelectedChanged(viewHolder, actionState);
     }

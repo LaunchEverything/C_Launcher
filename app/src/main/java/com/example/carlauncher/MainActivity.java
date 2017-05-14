@@ -29,6 +29,8 @@ import com.example.carlauncher.entity.CarItem;
 import com.example.carlauncher.helper.MyItemTouchCallback;
 import com.example.carlauncher.helper.OnRecyclerItemClickListener;
 import com.example.carlauncher.utils.EaseCubicInterpolator;
+import com.example.carlauncher.utils.VibratorUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 import rouchuan.customlayoutmanager.CenterScrollListener;
@@ -60,13 +62,21 @@ public class MainActivity extends Activity implements View.OnClickListener, Call
         mStartLeft = getResources().getDimensionPixelSize(R.dimen.recycleview_start_left);
         scrollZoomLayoutManager = new ScrollZoomLayoutManager(this, mStartLeft, mItemSpace);
         scrollZoomLayoutManager.setRecycleView(mCarRecyclerView);
-        mCarRecyclerView.addOnScrollListener(new CenterScrollListener(scrollZoomLayoutManager));
+        final CenterScrollListener scrollListener = new CenterScrollListener(scrollZoomLayoutManager);
+        mCarRecyclerView.addOnScrollListener(scrollListener);
         mCarRecyclerView.setLayoutManager(scrollZoomLayoutManager);
         mAdapter = new RecyclerAdapter(R.layout.item_car, mCarItems);
         mAdapter.setCallback(this);
         mCarRecyclerView.setAdapter(mAdapter);
         layout();
-        final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new MyItemTouchCallback(mAdapter));
+        MyItemTouchCallback touchCallback = new MyItemTouchCallback(mAdapter);
+        final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(touchCallback);
+        touchCallback.setOnDragListener(new MyItemTouchCallback.OnDragListener() {
+            @Override
+            public void onFinishDrag() {
+                scrollListener.resetPosition(scrollZoomLayoutManager, mCarRecyclerView);
+            }
+        });
         itemTouchHelper.attachToRecyclerView(mCarRecyclerView);
 
         mCarRecyclerView.addOnItemTouchListener(new OnRecyclerItemClickListener(mCarRecyclerView) {
@@ -75,17 +85,9 @@ public class MainActivity extends Activity implements View.OnClickListener, Call
                 Toast.makeText(MainActivity.this, "onItemClick,item = " + vh.getAdapterPosition(), Toast.LENGTH_SHORT);
                 if (vh.getLayoutPosition() != mCarItems.size()-1) {
                     itemTouchHelper.startDrag(vh);
-//                    VibratorUtil.Vibrate(MainActivity.this, 70);   //震动70ms
+                    VibratorUtil.Vibrate(MainActivity.this, 70);   //震动70ms
                 }
             }
-
-//            @Override
-//            public void onItemClick(RecyclerView.ViewHolder vh) {
-//                int postion = vh.getAdapterPosition();
-//                Intent intent = mCarItems.get(postion).getIntent();
-//                startActivity(intent);
-//                overridePendingTransition(0, 0);
-//            }
         });
     }
 
