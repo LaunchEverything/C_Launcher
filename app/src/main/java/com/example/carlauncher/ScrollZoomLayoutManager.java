@@ -49,8 +49,9 @@ public class ScrollZoomLayoutManager extends CustomLayoutManager {
     protected void setItemViewProperty(View itemView, float targetOffset) {
         float scale = calculateScale((int) targetOffset + startLeft);
         float rotation = calculateRotation((int) targetOffset + startLeft);
+        itemView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         itemView.setPivotY(mDecoratedChildHeight / 4);
-        itemView.setScaleX(scale);
+        itemView.setScaleX(1);
         itemView.setScaleY(scale);
         itemView.setRotationY(rotation);
         boolean hideView =  ((targetOffset + startLeft + mDecoratedChildWidth > getHorizontalSpace())

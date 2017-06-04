@@ -36,7 +36,7 @@
 
     <com.example.carlauncher.entity.ReflectView
         android:id="@+id/reflect_view"
-        android:layout_marginTop="@dimen/icon_padding_top"
+        android:layout_marginTop="@dimen/relect_padding_top"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

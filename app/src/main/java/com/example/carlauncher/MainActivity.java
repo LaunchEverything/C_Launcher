@@ -108,7 +108,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Call
         int smallSide = Math.min(realSize.x, realSize.y);
         int largeSide = Math.max(realSize.x, realSize.y);
         int itemWidth = (largeSide - 2 * mStartLeft - (ITEM_COUNT_IN_PAGE - 1) * mItemSpace) / ITEM_COUNT_IN_PAGE;
-        int itemHeight = (int)(itemWidth * 1.5f);
+        int itemHeight = (int)(itemWidth * 1.2f);
         mAdapter.setItemSize(itemWidth, itemHeight);
     }
 
@@ -193,7 +193,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Call
                     child.setTranslationX(trans * (1 - value) );
                     float scale = scrollZoomLayoutManager.calculateScale((int)(trans * (1 - value)) + child.getLeft());
                     float rotation = scrollZoomLayoutManager.calculateRotation((int)(trans * (1 - value)) + child.getLeft());
-                    child.setScaleX(scale);
+                    child.setScaleX(1);
                     child.setScaleY(scale);
                     child.setRotationY(rotation);
                     mCarRecyclerView.setAlpha(value * value);
